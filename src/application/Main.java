@@ -1,5 +1,7 @@
 package application;
 
+import java.io.File;
+
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -9,6 +11,9 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -17,6 +22,9 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -34,17 +42,16 @@ public class Main extends Application {
 	    GridPane gridpane = new GridPane();
 	    gridpane.setPadding(new Insets(15,15,15,15));
 	    
-	    Label labelTitel = new Label("Gefundene Datein");
+	    Label labelTitel = new Label("Gefundene Dateien");
 	    gridpane.add(labelTitel, 2, 0);
 	    GridPane.setHalignment(labelTitel, HPos.CENTER);
 	    wurzel.getChildren().add(gridpane);
 	    
-		
 		TableView<Datei> table = new TableView<Datei>();
 		table.setPrefWidth(350);
 		table.setPrefHeight(300);
 		
-		ObservableList<Datei> datenSatz = getDateienDatensatz();
+		ObservableList<Datei> datenSatz = FXCollections.<Datei> observableArrayList();
 		table.setItems(datenSatz);
 		gridpane.add(table, 2, 1);
 		
@@ -57,53 +64,111 @@ public class Main extends Application {
 		// Setup the second column: path
 		TableColumn<Datei, String> pathCol = new TableColumn<Datei, String>("Pfad");
 		pathCol.setMinWidth(100);
-		pathCol.setCellValueFactory(new PropertyValueFactory<Datei, String>("vorname"));
+		pathCol.setCellValueFactory(new PropertyValueFactory<Datei, String>("path"));
 		pathCol.setPrefWidth(table.getPrefWidth() / 3);
 		
 		// Setup the third colum: groesse
-		TableColumn<Datei, Integer> dataSizeCol = new TableColumn<Datei, Integer>("Groesse (Byte)");
+		TableColumn<Datei, Long> dataSizeCol = new TableColumn<Datei, Long>("Groesse (Byte)");
 		dataSizeCol.setMinWidth(100);
-		dataSizeCol.setCellValueFactory(new PropertyValueFactory<Datei, Integer>("nachname"));
+		dataSizeCol.setCellValueFactory(new PropertyValueFactory<Datei, Long>("dataSize"));
 		dataSizeCol.setPrefWidth(table.getPrefWidth() / 3);
 
-		
 		dataSizeCol.setSortType(TableColumn.SortType.DESCENDING);
 		
 		table.getColumns().add(nameCol);
 		table.getColumns().add(pathCol);
 		table.getColumns().add(dataSizeCol);
-
-
-		TextField startordner = new TextField("Bitte den Startordner eingeben");
-		startordner.setPrefWidth(300);
-		TextField anzDateien = new TextField("Bitte die Anzahl der Dateien eingeben");
-		anzDateien.setPrefWidth(300);
 		
 		EventHandler<ActionEvent> event = new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e) {
-				//todo
+				// TODO
 			}
 		};
-			
+		
+		// TextField startordner
+		TextField startordner = new TextField("Bitte den Startordner eingeben");
+		startordner.setPrefWidth(300);
+		gridpane.add(new Label("Startordner: "), 2, 2);
+		gridpane.add(startordner, 2, 3);
 		startordner.setOnAction(event);
+		
+		// TextField anzDateien
+		TextField anzDateien = new TextField("Bitte die Anzahl der Dateien eingeben");
+		anzDateien.setPrefWidth(300);
+		gridpane.add(new Label("Anzahl Dateien: "), 2, 5);
+		gridpane.add(anzDateien, 2, 6);
 		anzDateien.setOnAction(event);
 		
-		gridpane.add(new Label("Startordner: "), 2, 2);
-		gridpane.add(startordner, 2, 2);
-		gridpane.add(new Label("Anzahl Dateien: "), 2, 3);
-		gridpane.add(anzDateien, 2, 3);
+		// Button directoryChooser
+		Button directoryChooserButton = new Button("Ordner auswählen");
+		gridpane.add(directoryChooserButton, 2, 4);
+				
+		directoryChooserButton.setOnAction(new EventHandler<ActionEvent>() {
+		    @Override
+		    public void handle(ActionEvent event) {
+		    	startordner.setText(getFile(primaryStage).getPath());
+		    }
+		});
+		
+		// Button dateisucheButton
+		Button dateisucheButton = new Button("Dateien suchen");
+		gridpane.add(dateisucheButton, 2, 7);
+		
+		dateisucheButton.setOnAction(new EventHandler<ActionEvent>() {
+		    @Override
+		    public void handle(ActionEvent event) {
+		    	datenSatz.clear();
+		    	
+		    	File ordner = new File(startordner.getText());
+		    	if (!ordner.isDirectory()) {
+		    		Alert alert = new Alert(AlertType.INFORMATION);
+		            alert.setTitle("Fehlermeldung");
+		            alert.setHeaderText(null);
+		            alert.setContentText("Ungültige Eingabe für den Startordner");
+		            alert.showAndWait();
+		    	}
+		    	
+		    	int anzahlDateien = 0;
+		    	try {
+		    		anzahlDateien = Integer.parseInt(anzDateien.getText());
+		    	} catch (NumberFormatException e) {
+		    		Alert alert = new Alert(AlertType.INFORMATION);
+		            alert.setTitle("Fehlermeldung");
+		            alert.setHeaderText(null);
+		            alert.setContentText("Ungültige Eingabe für Anzahl der Dateien");
+		            alert.showAndWait();
+		    	}
+		    	Dateisuche dateisuche = new Dateisuche(ordner, anzahlDateien, datenSatz);
+		    	try {
+					dateisuche.call();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+		    }
+		});
 		
 		// Finalize stage
 	    primaryStage.setScene(szene);
 	    primaryStage.show();
 	}
-
+	
+	private File getFile(Stage primaryStage) {
+		DirectoryChooser directoryChooser = new DirectoryChooser();
+	   	directoryChooser.setTitle("Open Resource File");
+	   	 
+	   	File selectedDirectory = directoryChooser.showDialog(primaryStage);
+	   	if (selectedDirectory != null) {
+	   		return selectedDirectory;
+	   	}
+	   	return null;
+	}
+	
 	private ObservableList<Datei> getDateienDatensatz() {
-		Datei datei1 = new Datei("1", "Dieter", 1);
-		Datei datei2 = new Datei("Hans2", "Dieter", 2);
-		Datei datei3 = new Datei("Hans3", "Dieter", 3);
+		Datei datei1 = new Datei("1", "Dieter", 4);
+		Datei datei2 = new Datei("Hans", "Dieter", 2);
+		Datei datei3 = new Datei("Anna", "Dieter", 3);
 
-		ObservableList<Datei> dateien = FXCollections.<Datei>observableArrayList(datei1, datei2, datei3);
+		ObservableList<Datei> dateien = FXCollections.<Datei> observableArrayList(datei1, datei2, datei3);
 		return dateien;
 	}
 	

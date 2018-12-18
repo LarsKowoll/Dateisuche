@@ -1,41 +1,43 @@
 package application;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 public class Datei {
-	private String _name;
-	private String _path;
-	private int _dataSize;
+	private StringProperty name;
+	private StringProperty path;
+	private LongProperty dataSize;
 	
-	public Datei (String name, String path, int dataSize) {
-		this._name = name;
-		this._path = path;
-		this._dataSize = dataSize;	
+	public Datei(String name, String path, long dataSize) {
+		this.name = new SimpleStringProperty(name);
+		this.path = new SimpleStringProperty(path);
+		this.dataSize = new SimpleLongProperty(dataSize);
 	}
 	
 	public String getName() {
-		return _name;
+		return name.get();
 	}
 	
 	public void setName(String name) {
-		_name = name;
+		this.name.set(name);
 	}
 	
 	public String getPath() {
-		return _path;
+		return path.get();
 	}
 	
 	public void setPath(String path) {
-		_path = path;
+		this.path.set(path);
 	}
 	
 	public long getDataSize() {
-		return _dataSize;
+		return dataSize.get();
 	}
 	
-	public void setDataSize(int dataSize) {
-		_dataSize = dataSize;
+	public void setDataSize(long dataSize) {
+		this.dataSize.set(dataSize);
 	}
 	
 	
