@@ -57,13 +57,13 @@ public class Main extends Application {
 		// Setup the second column: path
 		TableColumn<Datei, String> pathCol = new TableColumn<Datei, String>("Pfad");
 		pathCol.setMinWidth(100);
-		pathCol.setCellValueFactory(new PropertyValueFactory<Datei, String>("pfad"));
+		pathCol.setCellValueFactory(new PropertyValueFactory<Datei, String>("vorname"));
 		pathCol.setPrefWidth(table.getPrefWidth() / 3);
 		
 		// Setup the third colum: groesse
 		TableColumn<Datei, Integer> dataSizeCol = new TableColumn<Datei, Integer>("Groesse (Byte)");
 		dataSizeCol.setMinWidth(100);
-		dataSizeCol.setCellValueFactory(new PropertyValueFactory<Datei, Integer>("groesse"));
+		dataSizeCol.setCellValueFactory(new PropertyValueFactory<Datei, Integer>("nachname"));
 		dataSizeCol.setPrefWidth(table.getPrefWidth() / 3);
 
 		
