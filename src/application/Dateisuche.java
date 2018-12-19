@@ -10,6 +10,7 @@ public class Dateisuche extends Task<Boolean>{
 	private File path;
 	private int anzahlDateien;
 	private ObservableList<Datei> datensatz;
+	private static int max;
 	
 	public Dateisuche(File path, int anzahlDateien, ObservableList<Datei> datensatz) {
 		this.path = path;
@@ -22,7 +23,7 @@ public class Dateisuche extends Task<Boolean>{
 		if (path.isDirectory()) {
 			File[] files = path.listFiles();
 			
-			int max = Math.min(files.length, anzahlDateien);
+			max = Math.min(files.length, anzahlDateien);
 			
 			for (int i = 0; i < max; i++) {
 				if (files[i].isFile()) {
@@ -31,5 +32,9 @@ public class Dateisuche extends Task<Boolean>{
 			}
 		}
 		return null;
+	}
+	
+	public static int getMax() {
+		return max;
 	}
 }

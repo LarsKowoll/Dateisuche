@@ -15,6 +15,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -73,11 +74,14 @@ public class Main extends Application {
 		dataSizeCol.setCellValueFactory(new PropertyValueFactory<Datei, Long>("dataSize"));
 		dataSizeCol.setPrefWidth(table.getPrefWidth() / 3);
 
-		dataSizeCol.setSortType(TableColumn.SortType.DESCENDING);
+		
 		
 		table.getColumns().add(nameCol);
 		table.getColumns().add(pathCol);
 		table.getColumns().add(dataSizeCol);
+		
+		
+		
 		
 		EventHandler<ActionEvent> event = new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e) {
@@ -98,6 +102,17 @@ public class Main extends Application {
 		gridpane.add(new Label("Anzahl Dateien: "), 2, 5);
 		gridpane.add(anzDateien, 2, 6);
 		anzDateien.setOnAction(event);
+		
+		// Progressbar
+		ProgressBar fortschrittsanzeige = new ProgressBar();
+		GridPane.setHalignment(fortschrittsanzeige, HPos.CENTER);
+		gridpane.add(fortschrittsanzeige, 2, 7);
+		
+
+		Label label = new Label("Working");
+		gridpane.add(label, 2, 7);
+		GridPane.setHalignment(label, HPos.CENTER);
+		
 		
 		// Button directoryChooser
 		Button directoryChooserButton = new Button("Ordner auswählen");
@@ -144,6 +159,18 @@ public class Main extends Application {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+		    	
+		    	
+		    	FortschrittsanzeigeTask task = new FortschrittsanzeigeTask(label);
+				
+				fortschrittsanzeige.progressProperty().unbind();
+				fortschrittsanzeige.progressProperty().bind(task.progressProperty());
+				
+				Thread worker = new Thread(task);
+				worker.start();
+				
+				dataSizeCol.setSortType(TableColumn.SortType.DESCENDING);
+				table.getSortOrder().add(dataSizeCol);
 		    }
 		});
 		
