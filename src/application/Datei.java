@@ -5,6 +5,11 @@ import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+/**
+ * Repraesentiert eine Datei, bestehend aus Name, Dateipfad und Dateigroesse
+ * @author Lars, Philip
+ *
+ */
 public class Datei {
 	private StringProperty name;
 	private StringProperty path;

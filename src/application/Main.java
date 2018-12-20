@@ -28,10 +28,19 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 
+/**
+ * GUI fuer die Suche nach Dateien in einem Verzeichnis inklusive aller Unterverzeichnisse
+ * @author Lars, Philip
+ *
+ */
 public class Main extends Application {
 	
 	String _dateipfad;
 	int _anzahlDateien;
+	
+	/**
+	 * Erstellt GUI
+	 */
 	@Override
 	public void start(Stage primaryStage) {
 		primaryStage.setTitle("Dateirecherche");
@@ -121,7 +130,7 @@ public class Main extends Application {
 		directoryChooserButton.setOnAction(new EventHandler<ActionEvent>() {
 		    @Override
 		    public void handle(ActionEvent event) {
-		    	startordner.setText(getFile(primaryStage).getPath());
+		    	startordner.setText(getDirectory(primaryStage).getPath());
 		    }
 		});
 		
@@ -179,7 +188,12 @@ public class Main extends Application {
 	    primaryStage.show();
 	}
 	
-	private File getFile(Stage primaryStage) {
+	/**
+	 * Oeffnet einen DirectoryChooser und gibt den ausgewaehlten Ordner zurueck
+	 * @param primaryStage
+	 * @return ausgewaehlten Ordner
+	 */
+	private File getDirectory(Stage primaryStage) {
 		DirectoryChooser directoryChooser = new DirectoryChooser();
 	   	directoryChooser.setTitle("Open Resource File");
 	   	 
@@ -190,6 +204,10 @@ public class Main extends Application {
 	   	return null;
 	}
 	
+	/**
+	 * Alt
+	 * @return
+	 */
 	private ObservableList<Datei> getDateienDatensatz() {
 		Datei datei1 = new Datei("1", "Dieter", 4);
 		Datei datei2 = new Datei("Hans", "Dieter", 2);
